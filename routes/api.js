@@ -37,7 +37,7 @@ router.get("/tesseract", async function (req, res, next) {
 
 
     // var image = "https://picturetherecipe.com/wp-content/uploads/2013/07/Picture-The-Recipe-Tips-Muffin-tin-for-stuffed-veggies.jpg"
-    var image = "./tests/images/nouilles2.png"
+    var image = "./tests/images/ok/axoa2.png"
 
     const config = {
         lang: "fra",
