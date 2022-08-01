@@ -29,8 +29,8 @@ router.post("/search-tags", async function (req, res, next) {
 //DONNEES d'ENTREE: req.body.searchItem (string)
 //traitement : recherche BDD sur searchItem dans direction/ingredients/title
 //DONNEES DE SORTIE:tableau de recettes qui contiennent le searchItem dans direction/ingredients/title [{title,ingredients,direction,persons,cookingTime,prepTime,tags,author,picture,comments,likeCount,privateStatus}]
-router.get("/search-name", function (req, res, next) {
-	
+router.get("/search-input", function (req, res, next) {
+
 	res.json({ recipes });
 });
 
