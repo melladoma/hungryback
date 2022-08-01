@@ -1,19 +1,27 @@
-var mongoose = require('mongoose')
+var mongoose = require("mongoose");
 
-var recipeSchema = mongoose.Schema({
-    name: String,
-    img: String,
-    ingredients: Array,
-    process: String
-   });
-
-var userSchema = mongoose.Schema({
-    email: String,
-    username: String,
-    password: String,
-    likedrecipes : [{ type: mongoose.Schema.Types.ObjectId, ref: 'recipes' }],
-    personalrecipes : recipeSchema
+var weeklyPlanSchema = mongoose.Schema({
+    date: Date,
+    meal: { type: mongoose.Schema.Types.ObjectId, ref: "recipes" }
 });
 
+var shoppingListSchema = mongoose.Schema({
+    name: String,
+    quantity: Number
+});
 
-module.exports = mongoose.model('users', userSchema);
+var userSchema = mongoose.Schema({
+    username: String,
+    email: String,
+    password: String,
+    token: String,
+    avatar: String, //url
+    description: String,
+    premiumStatus: Boolean,
+    weeklyPlan: weeklyPlanSchema,
+    shoppingList: shoppingListSchema,
+    addedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes" }],
+    likedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes" }],
+});
+
+module.exports = mongoose.model("users", userSchema);
