@@ -7,11 +7,22 @@ const { default: mongoose } = require("mongoose");
 const tesseract = require("node-tesseract-ocr");
 const vision = require("@google-cloud/vision");
 const treatText = require("./text_treatment_function")
+var uniqid = require('uniqid');
 
 //-------ROUTE TESSERACT - POST
 router.post("/tesseract", async function (req, res, next) {
-    res.send('respond with a resource');
-})
+    console.log("coucu");
+    console.log(req.files);
+    var pictureName = './tmp/'+uniqid()+'.jpg';
+    var resultCopy = await req.files.recette.mv('./tmp/recette.jpg');
+      if(!resultCopy) {
+        res.json({result: true});
+      } else {
+        res.json({result: false, error: resultCopy});
+      }
+   });
+//     res.send('respond with a resource');
+//  })
 //DONNEES d'ENTREE: uri photo  req.body.photoUri
 //TRAITEMENT : transfo text en objet
 //DONNEES DE SORTIE: objet form{title,ingredients, direction, persons, cookingTime, prepTime, tags}
