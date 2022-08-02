@@ -34,10 +34,21 @@ router.post('/sign-up', async function (req, res, next) {
     email: req.body.emailFromFront
   })
   if (data != null) {
-    error.push('utilisateur déjà présent')
+    error.push('Email déjà présent')
   }
   //-------------------------------------------------------------------
   
+  
+  //verifier qu'un utilisateur n'a pas le Name deja dans la BDD --------------
+  const dodo = await userModel.findOne({
+    username: req.body.usernameFromFront
+  })
+  if (dodo != null) {
+    error.push('Name déjà présent')
+  }
+  //-------------------------------------------------------------------
+
+
   //verifier que les champs de saisie sont pas vide
   if (req.body.usernameFromFront == ''
     || req.body.emailFromFront == ''
@@ -100,6 +111,7 @@ router.post('/sign-in', async function (req, res, next) {
   if (error.length == 0) {
     user = await userModel.findOne({
       email: req.body.emailFromFront,
+      //username: req.body.usernameFromFront,
     })
 
     //si user est dans la BDD (l'utilisateur est bien la)
@@ -114,10 +126,25 @@ router.post('/sign-in', async function (req, res, next) {
         error.push('mot de passe incorrect')
       }
       //sinon l'utilisateur est pas dans la BDD du coup email incorrect
-    } else {
-      error.push('email incorrect')
+    } else if (!user){
+      user = await userModel.findOne({
+      username: req.body.emailFromFront,})
+    }
+    if (user) {
+      //si le mot de passe est bon l'utilisateur est la (et result est true)
+      if (bcrypt.compareSync(req.body.passwordFromFront, user.password)) {
+        result = true
+        token = user.token
+        //sinon le mot de pas est incorrect 
+      } else {
+        result = false
+        error.push('mot de passe incorrect')
+      } 
+    }else {
+      error.push('email incorrect ou user name')
     }
   }
+
 
   res.json({ result, user, error, token })
 })
