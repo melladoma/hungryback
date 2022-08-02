@@ -11,10 +11,11 @@ var usersRouter = require('./routes/users');
 var apiRouter = require('./routes/api');
 var searchRouter = require('./routes/search');
 var recipeSheetRouter = require('./routes/recipesheet');
+var fileUpload = require('express-fileupload');
 
 var app = express();
 
-
+app.use(fileUpload());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');

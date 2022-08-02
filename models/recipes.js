@@ -2,24 +2,24 @@ var mongoose = require("mongoose");
 
 var ingredientSchema = mongoose.Schema({
 	name: String,
-	quantity: Number,
+	quantity: String,
 });
 
 var commentSchema = mongoose.Schema({
-	author: { type: mongoose.Schema.Types.ObjectId, ref: "addresses" },
+	author: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
 	date: Date,
 	content: String,
 });
 
 var recipeSchema = mongoose.Schema({
 	name: String,
-	ingredients: ingredientSchema,
+	ingredients: [ingredientSchema],
 	directions: String,
 	servings: Number, //pour combien de personnes
-	prepTime: Number, //en minutes
-	cookTime: Number, //en minutes
+	prepTime: String, //en minutes
+	cookTime: String, //en minutes
 	tags: Array, //tableau de strings
-	author: { type: mongoose.Schema.Types.ObjectId, ref: "addresses" }, //personne qui l'a importé ou créé dans hungrybook, et pas le cuisinier qui l'a inventé
+	author: { type: mongoose.Schema.Types.ObjectId, ref: "users" }, //personne qui l'a importé ou créé dans hungrybook, et pas le cuisinier qui l'a inventé
 	image: String, //url
 	comments: commentSchema,
 	likeCount: Number, //nb de likes
