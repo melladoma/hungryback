@@ -29,9 +29,79 @@ router.post("/search-tags", async function (req, res, next) {
 //DONNEES d'ENTREE: req.body.searchItem (string)
 //traitement : recherche BDD sur searchItem dans direction/ingredients/title
 //DONNEES DE SORTIE:tableau de recettes qui contiennent le searchItem dans direction/ingredients/title [{title,ingredients,direction,persons,cookingTime,prepTime,tags,author,picture,comments,likeCount,privateStatus}]
-router.get("/search-input", function (req, res, next) {
+router.post("/search-input", async function (req, res, next) {
+	//recettes feed
+	console.log(req.body.input)
+	var listAuthor = []
+	var recipesByName = []
+	var recipesByIngredients = []
+	var recipesByDirections = []
+	if (req.body.input.length === 0) {
+		recipesByName = await recipeModel.find()
+	} else {
+		
+		listAuthor = (await userModel.find()).map(x=>x.username)
+		newListAuthor = listAuthor.filter(x=>x.indexOf(req.body.input) === 0 ) //filtrer si ca correspond à la lettre
+		console.log(listAuthor)
+		
 
-	res.json({ recipes });
+		
+		let regex = new RegExp(req.body.input, 'i')
+	recipesByName = await recipeModel.find({ name: reg });
+	console.log(recipesByName)
+	/* recipesByIngredients = await recipeModel.find({ ingredients: { "$all": reg } }); */
+	/* recipesByDirections = await recipeModel.find({ directions: reg }); */
+	}
+	
+
+	res.json({ recipesByName, listAuthor: JSON.stringify(newListAuthor), recipesByDirections });
+});
+
+
+router.post("/search-input-myrecipes", async function (req, res, next) {
+	//recettes feed
+	console.log(req.body.input)
+	var recipesByName = []
+	/* var recipesByIngredients = [] */
+	var recipesByDirections = []
+	if (req.body.input.length === 0) {
+		recipesByName = await recipeModel.find()
+	} else {
+		
+		listAuthor = (await userModel.find()).map(x=>x.username)
+		newListAuthor = listAuthor.filter(x=>x.indexOf(req.body.input) === 0 ) //filtrer si ca correspond à la lettre
+		console.log(listAuthor)
+		
+
+		
+		let regex = new RegExp(req.body.input, 'i')
+	recipesByName = await recipeModel.find({ name: reg });
+	console.log(recipesByName)
+	/* recipesByIngredients = await recipeModel.find({ ingredients: { "$all": reg } }); */
+	/* recipesByDirections = await recipeModel.find({ directions: reg }); */
+	}
+	
+
+	res.json({ recipesByName, listAuthor: JSON.stringify(newListAuthor), recipesByDirections });
+});
+
+
+
+router.post("/initial-search-myrecipes", async function (req, res, next) {
+	console.log(req.body.token)
+	var myAccount = await userModel.findOne({token : req.body.token}).populate('addedRecipes').populate('likedRecipes')
+	
+	res.json({ addedRecipes : myAccount.addedRecipes, likedRecipes: myAccount.likedRecipes });
+});
+
+module.exports = router;
+
+
+router.post("/initial-search-allrecipes", async function (req, res, next) {
+	console.log(req.body.token)
+	var myAccount = await userModel.findOne({token : req.body.token}).populate('addedRecipes').populate('likedRecipes')
+	
+	res.json({ addedRecipes : myAccount.addedRecipes, likedRecipes: myAccount.likedRecipes });
 });
 
 module.exports = router;
