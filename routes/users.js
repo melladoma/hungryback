@@ -34,7 +34,7 @@ router.post('/sign-up', async function (req, res, next) {
     email: req.body.emailFromFront
   })
   if (data != null) {
-    error.push('Email déjà présent')
+    error.push('Cet E-mail est déjà utilisé.')
   }
   //-------------------------------------------------------------------
   
@@ -44,7 +44,7 @@ router.post('/sign-up', async function (req, res, next) {
     username: req.body.usernameFromFront
   })
   if (dodo != null) {
-    error.push('Name déjà présent')
+    error.push('Nom utilisateur déjà présent.')
   }
   //-------------------------------------------------------------------
 
@@ -54,13 +54,13 @@ router.post('/sign-up', async function (req, res, next) {
     || req.body.emailFromFront == ''
     || req.body.passwordFromFront == ''
   ) {
-    error.push('champs vides')
+    error.push('Vous devez remplir les champs de saisie.')
   }
   console.log(req.body.passwordFromFront);
   console.log(req.body.confirmPasswordFromFront);
   
   if (req.body.passwordFromFront != req.body.confirmPasswordFromFront) {
-    error.push('les deux mot de passe sont pas bon')
+    error.push('Les deux mot de passe ne correspondent pas.')
   }
 
   //pour cree un nouvelle utilisateur dans la BDD
@@ -105,7 +105,7 @@ router.post('/sign-in', async function (req, res, next) {
   if (req.body.emailFromFront == ''
     || req.body.passwordFromFront == ''
   ) {
-    error.push('champs vides')
+    error.push('Vous devez remplir les champs de saisie.')
   }
 
   if (error.length == 0) {
@@ -120,10 +120,10 @@ router.post('/sign-in', async function (req, res, next) {
       if (bcrypt.compareSync(req.body.passwordFromFront, user.password)) {
         result = true
         token = user.token
+      
         //sinon le mot de pas est incorrect 
-      } else {
-        result = false
-        error.push('mot de passe incorrect')
+      } else if(result = false) {
+        error.push('Mot de passe incorrect.')
       }
       //sinon l'utilisateur est pas dans la BDD du coup email incorrect
     } else if (!user){
@@ -138,10 +138,10 @@ router.post('/sign-in', async function (req, res, next) {
         //sinon le mot de pas est incorrect 
       } else {
         result = false
-        error.push('mot de passe incorrect')
+        error.push('Mot de passe incorrect.')
       } 
     }else {
-      error.push('email incorrect ou user name')
+      error.push('E-mail ou pseudo incorrect.')
     }
   }
 
