@@ -1,6 +1,9 @@
 var express = require('express');
 var router = express.Router();
 
+var recipeModel = require('../models/recipes')
+
+
 
 router.get('/', function (req, res, next) {
 	res.send('respond with a resource');
@@ -31,8 +34,15 @@ router.post('/modify-recipe', function (req, res, next) {
 //ROUTE DELETE FICHE RECETTE
 //DONNEES ENTREE : inputs recette
 //DONNEES SORTIE : result true false modif BDD
-router.post('/delete-recipe', function (req, res, next) {
-	res.send('respond with a resource');
+router.delete('/delete-recipe/:name', async function (req, res, next) {
+
+	var deleteRecipe= await recipeModel.deleteOne({ name: req.params.name})
+
+	var result = false
+	if(deleteRecipe.deletedCount == 1){
+		result = true
+	  }
+	res.json({result});
 });
 
 //ROUTE AJOUT A LA SHOPPING LIST
