@@ -44,7 +44,6 @@ router.post('/upload-image', async function (req, res, next) {
 	var resultCopy = await req.files.image.mv(filePath);
 	if (!resultCopy) {
 		var resultCloud = await cloudinary.uploader.upload(filePath);
-		console.log("result cloud", resultCloud)
 		let resultObj = {
 			imageUrl: resultCloud.url,
 		}
@@ -59,37 +58,49 @@ router.post('/upload-image', async function (req, res, next) {
 
 
 router.post('/validate-form', async function (req, res, next) {
-	// console.log(req.body.recipe, req.body.userToken)
-
-	let imageCloudinary
-	//traitement cloudinary a faire
-
 	//filtre les ingredients vides
 	let ingredients = req.body.recipe.ingredients.filter(x => x.name !== "")
-	var newAuthor = await UserModel.findOne({ token: req.body.userToken });
+	//recherche l'auteur de la recette grace a son token
+	var author = await UserModel.findOne({ token: req.body.userToken });
 
+	//creation de la recette dans la BDD
 	var newRecipe = new RecipeModel({
 		name: req.body.recipe.name,
 		directions: req.body.recipe.directions,
-		author: newAuthor._id,
+		author: author._id,
 		servings: req.body.recipe.servings,
 		prepTime: req.body.recipe.prepTime,
-		cookTime: req.body.recipe.prepTime,
+		cookTime: req.body.recipe.cookTime,
 		tags: req.body.recipe.tags,
 		image: req.body.recipe.image,
 		ingredients: ingredients,
+		likeCount: 0,
 		privateStatus: req.body.recipe.privateStatus,
 	})
 	var recipeSaved = await newRecipe.save();
 
-	//enregistrement de la recette dans les likes de l'auteur user
-	newAuthor.addedRecipes.push(recipeSaved._id)
-	authorSaved = await newAuthor.save()
+	//enregistrement de la recette dans les likes de l'auteur user en cle etrangere
+	author.addedRecipes.push(recipeSaved._id)
+	authorSaved = await author.save()
+
+	var recipeToFront = {
+		name: newRecipe.name,
+		directions: newRecipe.directions,
+		author: author.username,
+		servings: newRecipe.servings,
+		prepTime: newRecipe.prepTime,
+		cookTime: newRecipe.cookTime,
+		tags: newRecipe.tags,
+		image: newRecipe.image,
+		ingredients: newRecipe.ingredients,
+		likeCount: 0,
+		privateStatus: newRecipe.privateStatus,
+	};
 
 	let result = false;
 	if (recipeSaved && authorSaved) {
 		result = true;
-		res.json({ result, recipeSaved });
+		res.json({ result, recipeToFront });
 	} else {
 		res.json({ result })
 	}
