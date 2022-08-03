@@ -87,7 +87,7 @@ router.post("/search-input-myrecipes", async function (req, res, next) {
 
 
 
-router.post("/initial-search-myrecipes", async function (req, res, next) {
+router.post("/initial-fetch-myrecipes", async function (req, res, next) {
 	console.log(req.body.token)
 	var myAccount = await userModel.findOne({token : req.body.token}).populate('addedRecipes').populate('likedRecipes')
 	
@@ -97,7 +97,7 @@ router.post("/initial-search-myrecipes", async function (req, res, next) {
 module.exports = router;
 
 
-router.post("/initial-search-allrecipes", async function (req, res, next) {
+router.post("/initial-fetch-feedrecipes", async function (req, res, next) {
 	console.log(req.body.token)
 	var myAccount = await userModel.findOne({token : req.body.token}).populate('addedRecipes').populate('likedRecipes')
 	
