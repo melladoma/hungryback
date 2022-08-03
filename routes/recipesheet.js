@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
+
 router.get('/', function (req, res, next) {
 	res.send('respond with a resource');
 });
@@ -15,8 +16,9 @@ router.post('/add-recipe', function (req, res, next) {
 //ROUTE LIKE : AJOUT A recipesLiked 
 //DONNEES ENTREES: req.body.idRecipe
 //DONNEES SORTIE : result true false recette ajoutee a LikedList User en BDD
-router.post('/like-recipe', function (req, res, next) {
-	res.send('respond with a resource');
+router.post('/like-recipe', async function (req, res, next) {
+	res.send(newCoeur);
+	
 });
 
 //ROUTE MODIF FICHE RECETTE
