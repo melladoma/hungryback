@@ -20,11 +20,30 @@ router.post("/initial-fetch-myrecipes", async function (req, res, next) {
 module.exports = router;
 
 router.post("/initial-fetch-feedrecipes", async function (req, res, next) {
-	var allRecipes = await recipeModel.find();
+	'use strict';
+	let allRecipes = await recipeModel.find().populate("author").exec();
+	let allPublicRecipes = allRecipes.filter((x) => x.privateStatus === false);
+	let newArray = []
 	
-	var allPublicRecipes = allRecipes.filter((x) => x.privateStatus === false);
+	allPublicRecipes.forEach(x=>{
+		newArray.push({
+			_id: x._id,
+			name: x.name,
+			ingredients: x.ingredients,
+			directions: x.directions,
+			servings: x.servings,
+			prepTime: x.prepTime,
+			cookTime: x.cookTime,
+			tags: x.tags,
+			author: x.author.username,
+			image: x.image,
+			likeCount: x.likeCount,
+			privateStatus: x.privateStatus,
+		}) 
+	})
 
-	res.json({ allPublicRecipes });
+	/* newArray.push({...x._doc, author: x.author.username}) */
+	res.json({ allPublicRecipes: newArray });
 });
 
 module.exports = router;
