@@ -69,6 +69,13 @@ router.post("/sign-up", async function (req, res, next) {
 			email: req.body.emailFromFront,
 			password: hash,
 			token: uid2(32),
+			avatar: "",
+			description: "",
+			premiumStatus: false,
+			weeklyPlan: [],
+			shoppingList: [],
+			addedRecipes: [],
+			likedRecipes: [],
 		});
 
 		//enregistrer l'utilisateur en BDD
@@ -96,6 +103,7 @@ router.post("/sign-in", async function (req, res, next) {
 	var user = null;
 	var error = [];
 	var token = null;
+	var avatar = ""
 
 	if (req.body.emailFromFront == "" || req.body.passwordFromFront == "") {
 		error.push("Vous devez remplir les champs de saisie.");
@@ -114,6 +122,7 @@ router.post("/sign-in", async function (req, res, next) {
 				result = true;
 				token = user.token;
 				username = user.username;
+				avatar = user.avatar
 
 				//sinon le mot de pas est incorrect
 			} else if ((result = false)) {
@@ -131,6 +140,7 @@ router.post("/sign-in", async function (req, res, next) {
 				result = true;
 				token = user.token;
 				username = user.username;
+				avatar = user.avatar
 				//sinon le mot de pas est incorrect
 			} else {
 				result = false;
@@ -141,7 +151,7 @@ router.post("/sign-in", async function (req, res, next) {
 		}
 	}
 
-	res.json({ result, error, token, username });
+	res.json({ result, error, token, username, avatar });
 });
 
 module.exports = router;

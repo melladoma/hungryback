@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var recipeModel = require('../models/recipes')
+var userModel = require("../models/users");
 
 
 
@@ -13,12 +14,15 @@ router.post("/check-author", async function (req, res, next) {
 	var myAccount = await userModel
 		.findOne({ token: req.body.token })
 		.populate("addedRecipes")
+		.populate("likedRecipes")
 		.exec()
 
 	var AmITheAuthor = false
 	myAccount.addedRecipes.includes(req.body._id) ?
 	AmITheAuthor = true :
 	AmITheAuthor = false
+
+
 
 
 	res.json({
@@ -38,8 +42,15 @@ router.post('/add-recipe', function (req, res, next) {
 //DONNEES ENTREES: req.body.idRecipe
 //DONNEES SORTIE : result true false recette ajoutee a LikedList User en BDD
 router.post('/like-recipe', async function (req, res, next) {
-	res.send(newCoeur);
-	
+
+	var likedRecipe= await recipeModel.updateOne(
+		{ _id: req.body.id},
+		{ likeCount: Number(req.body.likecount) + 1 }
+	 );
+
+	 var userLikedRecipes= await userModel.updateOne({ token: req.body.token},{ $push: { likedRecipes: req.body.id } })
+	 
+	res.json({result: likedRecipe.modifiedCount});
 });
 
 //ROUTE MODIF FICHE RECETTE

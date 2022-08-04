@@ -18,8 +18,8 @@ var userSchema = mongoose.Schema({
 	avatar: String, //url
 	description: String,
 	premiumStatus: Boolean,
-	weeklyPlan: weeklyPlanSchema,
-	shoppingList: shoppingListSchema,
+	weeklyPlan: [weeklyPlanSchema],
+	shoppingList: [shoppingListSchema],
 	addedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes" }],
 	likedRecipes: [{ type: mongoose.Schema.Types.ObjectId, ref: "recipes" }],
 });
