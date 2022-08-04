@@ -21,8 +21,8 @@ var recipeSchema = mongoose.Schema({
 	ingredients: [ingredientSchema],
 	directions: String,
 	servings: Number, //pour combien de personnes
-	prepTime: String, //en minutes
-	cookTime: String, //en minutes
+	prepTime: Number, //en minutes
+	cookTime: Number, //en minutes
 	tags: Array, //tableau de strings
 	author: authorSchema, //personne qui l'a importé ou créé dans hungrybook, et pas le cuisinier qui l'a inventé
 	image: String, //url
