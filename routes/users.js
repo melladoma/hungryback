@@ -4,8 +4,6 @@ var router = express.Router();
 var uid2 = require("uid2");
 var bcrypt = require("bcrypt");
 
-// var uid2 = require('uid2')
-// var bcrypt = require('bcrypt');
 
 var userModel = require("../models/users");
 //-------ROUTE SIGN-UP - POST
@@ -53,8 +51,7 @@ router.post("/sign-up", async function (req, res, next) {
 	) {
 		error.push("Vous devez remplir les champs de saisie.");
 	}
-	console.log(req.body.passwordFromFront);
-	console.log(req.body.confirmPasswordFromFront);
+
 
 	if (req.body.passwordFromFront != req.body.confirmPasswordFromFront) {
 		error.push("Les deux mot de passe ne correspondent pas.");

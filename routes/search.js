@@ -5,14 +5,13 @@ var recipeModel = require("../models/recipes");
 var userModel = require("../models/users");
 
 router.post("/initial-fetch-myrecipes", async function (req, res, next) {
-	
+
 	var myAccount = await userModel
 		.findOne({ token: req.body.token })
 		.populate("addedRecipes")
 		.populate("likedRecipes")
 		.exec()
 
-console.log(myAccount)
 
 	res.json({
 		addedRecipes: myAccount.addedRecipes,
@@ -47,7 +46,7 @@ module.exports = router;
 	} else {
 		version aggregate:
 		 var aggregate = recipeModel.aggregate();
-		aggregate.match({ "tags": { "$all": JSON.parse(req.body.tags) } }); 
+		aggregate.match({ "tags": { "$all": JSON.parse(req.body.tags) } });
 		recipes = await aggregate.exec();
 
 		version qui trouve les recettes qui ont obligatoirement TOUS les elements du tableau:
