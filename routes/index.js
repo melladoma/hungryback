@@ -55,39 +55,66 @@ router.post("/upload-image", async function (req, res, next) {
 });
 
 router.post("/validate-form", async function (req, res, next) {
+	// console.log(req.body.recipe)
 	//filtre les ingredients vides
 	let ingredients = req.body.recipe.ingredients.filter((x) => x.name !== "");
 
-	//creation de la recette dans la BDD
-	var newRecipe = new recipeModel({
-		name: req.body.recipe.name,
-		ingredients: ingredients,
-		directions: req.body.recipe.directions,
-		servings: req.body.recipe.servings,
-		prepTime: req.body.recipe.prepTime,
-		cookTime: req.body.recipe.cookTime,
-		tags: req.body.recipe.tags,
-		author: { username: req.body.userName, token: req.body.userToken },
-		image: req.body.recipe.image,
-		comments: [],
-		likeCount: 1,
-		privateStatus: req.body.recipe.privateStatus,
-	});
-	var recipeSaved = await newRecipe.save();
+	if (!req.body.recipe._id) {
+		//creation de la recette dans la BDD
+		var newRecipe = new recipeModel({
+			name: req.body.recipe.name,
+			ingredients: ingredients,
+			directions: req.body.recipe.directions,
+			servings: req.body.recipe.servings,
+			prepTime: req.body.recipe.prepTime,
+			cookTime: req.body.recipe.cookTime,
+			tags: req.body.recipe.tags,
+			author: { username: req.body.userName, token: req.body.userToken },
+			image: req.body.recipe.image,
+			comments: [],
+			likeCount: 1,
+			privateStatus: req.body.recipe.privateStatus,
+		});
+		var recipeSaved = await newRecipe.save();
 
-	//enregistrement de la recette dans les likes de l'auteur user en cle etrangere
-	var author = await userModel.findOne({ token: req.body.userToken });
-	author.addedRecipes.push(recipeSaved._id);
-	authorSaved = await author.save();
-	//C'est marrant que ça marche ça, je savais même pas qu'on pouvait l'écrire comme ça, j'aurais fait un updateOne avec $push...
+		//enregistrement de la recette dans les likes de l'auteur user en cle etrangere
+		var author = await userModel.findOne({ token: req.body.userToken });
+		author.addedRecipes.push(recipeSaved._id);
+		authorSaved = await author.save();
 
-	let result = false;
-	if (recipeSaved && authorSaved) {
-		result = true;
-		res.json({ result, recipeSaved });
+		let result = false;
+		if (recipeSaved && authorSaved) {
+			result = true;
+			// console.log(recipeSaved)
+			res.json({ result, recipeSaved });
+		} else {
+			res.json({ result });
+		}
 	} else {
-		res.json({ result });
+
+		const filter = { _id: req.body.recipe._id };
+		const update = {
+			name: req.body.recipe.name,
+			ingredients: ingredients,
+			directions: req.body.recipe.directions,
+			servings: req.body.recipe.servings,
+			prepTime: req.body.recipe.prepTime,
+			cookTime: req.body.recipe.cookTime,
+			tags: req.body.recipe.tags,
+			image: req.body.recipe.image,
+			privateStatus: req.body.recipe.privateStatus,
+		};
+
+		let recipeUpdated = await recipeModel.findOneAndUpdate(filter, update, { new: true });
+		let result = false
+		if (recipeUpdated) {
+			result = true;
+			res.json({ result, recipeSaved: recipeUpdated });
+		} else {
+			res.json({ result });
+		}
 	}
+
 });
 
 router.get("/ajout-auto-recettes-bdd", async function (req, res, next) {
