@@ -12,11 +12,12 @@ router.post("/initial-fetch-myrecipes", async function (req, res, next) {
 		.populate("likedRecipes")
 		.exec()
 
-console.log(myAccount)
+	let addedRecipes = myAccount.addedRecipes.reverse()
+	let likedRecipes = myAccount.likedRecipes.reverse()
 
 	res.json({
-		addedRecipes: myAccount.addedRecipes,
-		likedRecipes: myAccount.likedRecipes,
+		addedRecipes: addedRecipes,
+		likedRecipes: likedRecipes,
 	});
 });
 
