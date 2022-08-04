@@ -5,11 +5,14 @@ var recipeModel = require("../models/recipes");
 var userModel = require("../models/users");
 
 router.post("/initial-fetch-myrecipes", async function (req, res, next) {
-	console.log(req.body.token);
+	
 	var myAccount = await userModel
 		.findOne({ token: req.body.token })
 		.populate("addedRecipes")
-		.populate("likedRecipes");
+		.populate("likedRecipes")
+		.exec()
+
+console.log(myAccount)
 
 	res.json({
 		addedRecipes: myAccount.addedRecipes,
@@ -20,30 +23,10 @@ router.post("/initial-fetch-myrecipes", async function (req, res, next) {
 module.exports = router;
 
 router.post("/initial-fetch-feedrecipes", async function (req, res, next) {
-	'use strict';
-	let allRecipes = await recipeModel.find().populate("author").exec();
-	let allPublicRecipes = allRecipes.filter((x) => x.privateStatus === false);
-	let newArray = []
-	
-	allPublicRecipes.forEach(x=>{
-		newArray.push({
-			_id: x._id,
-			name: x.name,
-			ingredients: x.ingredients,
-			directions: x.directions,
-			servings: x.servings,
-			prepTime: x.prepTime,
-			cookTime: x.cookTime,
-			tags: x.tags,
-			author: x.author.username,
-			image: x.image,
-			likeCount: x.likeCount,
-			privateStatus: x.privateStatus,
-		}) 
-	})
+	let allRecipes = await recipeModel.find();
+	let allPublicRecipes = allRecipes.filter((x) => x.privateStatus === false && x.author.token !== req.body.myToken);
 
-	/* newArray.push({...x._doc, author: x.author.username}) */
-	res.json({ allPublicRecipes: newArray });
+	res.json({ allPublicRecipes });
 });
 
 module.exports = router;

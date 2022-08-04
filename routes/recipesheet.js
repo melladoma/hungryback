@@ -9,6 +9,24 @@ router.get('/', function (req, res, next) {
 	res.send('respond with a resource');
 });
 
+router.post("/check-author", async function (req, res, next) {
+	var myAccount = await userModel
+		.findOne({ token: req.body.token })
+		.populate("addedRecipes")
+		.exec()
+
+	var AmITheAuthor = false
+	myAccount.addedRecipes.includes(req.body._id) ?
+	AmITheAuthor = true :
+	AmITheAuthor = false
+
+
+	res.json({
+		AmITheAuthor
+	});
+});
+
+
 //ROUTE AJOUT A recipesAdded HOMESCREEN
 //DONNEES ENTREES: req.body.idRecipe
 //DONNEES SORTIE : result true false recette ajoutee a AddedList User en BDD
@@ -34,9 +52,9 @@ router.post('/modify-recipe', function (req, res, next) {
 //ROUTE DELETE FICHE RECETTE
 //DONNEES ENTREE : inputs recette
 //DONNEES SORTIE : result true false modif BDD
-router.delete('/delete-recipe/:name', async function (req, res, next) {
+router.post('/delete-recipe', async function (req, res, next) {
 
-	var deleteRecipe= await recipeModel.deleteOne({ name: req.params.name})
+	var deleteRecipe= await recipeModel.deleteOne({ _id: req.body.id})
 
 	var result = false
 	if(deleteRecipe.deletedCount == 1){
