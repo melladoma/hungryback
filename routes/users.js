@@ -52,7 +52,6 @@ router.post("/sign-up", async function (req, res, next) {
 		error.push("Vous devez remplir les champs de saisie.");
 	}
 
-
 	if (req.body.passwordFromFront != req.body.confirmPasswordFromFront) {
 		error.push("Les deux mot de passe ne correspondent pas.");
 	}
@@ -100,7 +99,8 @@ router.post("/sign-in", async function (req, res, next) {
 	var user = null;
 	var error = [];
 	var token = null;
-	var avatar = ""
+	var avatar = "";
+	var likedRecipes = [];
 
 	if (req.body.emailFromFront == "" || req.body.passwordFromFront == "") {
 		error.push("Vous devez remplir les champs de saisie.");
@@ -119,7 +119,8 @@ router.post("/sign-in", async function (req, res, next) {
 				result = true;
 				token = user.token;
 				username = user.username;
-				avatar = user.avatar
+				avatar = user.avatar;
+				likedRecipes = user.likedRecipes;
 
 				//sinon le mot de pas est incorrect
 			} else if ((result = false)) {
@@ -137,7 +138,8 @@ router.post("/sign-in", async function (req, res, next) {
 				result = true;
 				token = user.token;
 				username = user.username;
-				avatar = user.avatar
+				avatar = user.avatar;
+				likedRecipes = user.likedRecipes;
 				//sinon le mot de pas est incorrect
 			} else {
 				result = false;
@@ -148,7 +150,7 @@ router.post("/sign-in", async function (req, res, next) {
 		}
 	}
 
-	res.json({ result, error, token, username, avatar });
+	res.json({ result, error, token, username, avatar, likedRecipes });
 });
 
 module.exports = router;
