@@ -24,7 +24,8 @@ module.exports = router;
 
 router.post("/initial-fetch-feedrecipes", async function (req, res, next) {
 	let allRecipes = await recipeModel.find();
-	let allPublicRecipes = allRecipes.filter((x) => x.privateStatus === false && x.author.token !== req.body.myToken);
+	let allPublicRecipes = allRecipes.filter((x) => x.privateStatus === false);
+	allPublicRecipes.reverse()
 
 	res.json({ allPublicRecipes });
 });
