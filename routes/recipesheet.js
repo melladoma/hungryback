@@ -43,14 +43,26 @@ router.post('/add-recipe', function (req, res, next) {
 //DONNEES SORTIE : result true false recette ajoutee a LikedList User en BDD
 router.post('/like-recipe', async function (req, res, next) {
 
-	var likedRecipe= await recipeModel.updateOne(
+	var likedRecipe = await recipeModel.findOne({ _id: req.body.id });
+	likedRecipe.likeCount = Number(likedRecipe.likeCount) + 1
+	likedRecipeSaved = await likedRecipe.save();
+	
+	/* var likedRecipe= await recipeModel.updateOne(
 		{ _id: req.body.id},
 		{ likeCount: Number(req.body.likecount) + 1 }
-	 );
+	 ); */
 
-	 var userLikedRecipes= await userModel.updateOne({ token: req.body.token},{ $push: { likedRecipes: req.body.id } })
+	/*  var userLikedRecipes= await userModel.updateOne({ token: req.body.token},{ $push: { likedRecipes: req.body.id } }) */
+	
+	var user = await userModel.findOne({ token: req.body.token }).populate("likedRecipes");
+	
+	user.likedRecipes.push(likedRecipeSaved._id);
+	userSaved = await user.save();
+	
+	var list = userSaved.likedRecipes.map(x=>x.id)
+	
 	 
-	res.json({result: likedRecipe.modifiedCount});
+	res.json({likedRecipes: list, likeCount: likedRecipeSaved.likeCount});
 });
 
 //ROUTE MODIF FICHE RECETTE
