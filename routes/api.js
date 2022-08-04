@@ -4,6 +4,8 @@ var request = require("sync-request");
 
 const { default: mongoose } = require("mongoose");
 
+const puppeteer = require('puppeteer');
+
 const tesseract = require("node-tesseract-ocr");
 const vision = require("@google-cloud/vision");
 const treatText = require("./text_treatment_function")
@@ -30,7 +32,47 @@ router.post("/tesseract", async function (req, res, next) {
 
 //------ROUTE URL SCRAPPER-POST
 router.post("/url-scrapper", async function (req, res, next) {
-    res.send('respond with a resource');
+    
+    const iPhone = puppeteer.devices['iPhone 13'];
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+ /*  await page.emulate(iPhone); */
+
+
+  await page.goto(req.body.url);
+
+  //prend code source, mais certaines pages n'affichent rien comme React
+  const extractedText = await page.$eval('*', (el) => el.innerText);
+    console.log("extracted:",extractedText); 
+
+    //fais un copier coller à la main
+    const extractedText1 = await page.$eval('*', (el) => {
+        const selection = window.getSelection();
+        const range = document.createRange();
+        range.selectNode(el);
+        selection.removeAllRanges();
+        selection.addRange(range);
+        return window.getSelection().toString();
+    });
+    console.log("extracted1",extractedText1);
+
+  await page.screenshot({path: './tmp/puppeteer/url_screenshot.jpg', fullPage: true});
+  await page.pdf({path: './tmp/puppeteer/puppet.pdf', format: 'a4'});
+
+  const dimensions = await page.evaluate(() => {
+    return {
+      width: document.documentElement.clientWidth,
+      height: document.documentElement.clientHeight,
+      deviceScaleFactor: window.devicePixelRatio,
+    };
+  });
+
+  console.log('Dimensions:', dimensions);
+
+  await browser.close();
+
+    res.json({});
 })
 //DONNEES d'ENTREE: uri photo  req.body.photoUri
 //TRAITEMENT: ???
@@ -68,5 +110,9 @@ router.get("/tesseract", async function (req, res, next) {
         })
 
 });
+
+
+
+
 
 module.exports = router;
