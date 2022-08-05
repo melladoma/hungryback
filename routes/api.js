@@ -7,22 +7,33 @@ const { default: mongoose } = require("mongoose");
 const puppeteer = require('puppeteer');
 
 const tesseract = require("node-tesseract-ocr");
-const vision = require("@google-cloud/vision");
 const treatText = require("./text_treatment_function")
 var uniqid = require('uniqid');
 
 //-------ROUTE TESSERACT - POST
 router.post("/tesseract", async function (req, res, next) {
-    console.log("coucu");
-    console.log(req.files);
-    var pictureName = './tmp/'+uniqid()+'.jpg';
-    var resultCopy = await req.files.recette.mv('./tmp/recette.jpg');
-      if(!resultCopy) {
-        res.json({result: true});
-      } else {
-        res.json({result: false, error: resultCopy});
-      }
-   });
+    var image = req.body.image;
+
+    const config = {
+        lang: "fra",
+        oem: 3,
+        psm: 3,
+    }
+    tesseract
+        .recognize(image, config)
+        .then((text) => {
+            console.log("Result:", text)
+            console.log(treatText(text))
+            var resultObj = treatText(text)
+            console.log(resultObj)
+            res.json({ recipeTreated: resultObj });
+        })
+        .catch((error) => {
+            console.log(error.message)
+            res.json({ message: "err" });
+        })
+
+});
 //     res.send('respond with a resource');
 //  })
 //DONNEES d'ENTREE: uri photo  req.body.photoUri
@@ -32,19 +43,19 @@ router.post("/tesseract", async function (req, res, next) {
 
 //------ROUTE URL SCRAPPER-POST
 router.post("/url-scrapper", async function (req, res, next) {
-    
+
     const iPhone = puppeteer.devices['iPhone 13'];
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
- /*  await page.emulate(iPhone); */
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    /*  await page.emulate(iPhone); */
 
 
-  await page.goto(req.body.url);
+    await page.goto(req.body.url);
 
-  //prend code source, mais certaines pages n'affichent rien comme React
-  const extractedText = await page.$eval('*', (el) => el.innerText);
-    console.log("extracted:",extractedText); 
+    //prend code source, mais certaines pages n'affichent rien comme React
+    const extractedText = await page.$eval('*', (el) => el.innerText);
+    console.log("extracted:", extractedText);
 
     //fais un copier coller à la main
     const extractedText1 = await page.$eval('*', (el) => {
@@ -55,22 +66,22 @@ router.post("/url-scrapper", async function (req, res, next) {
         selection.addRange(range);
         return window.getSelection().toString();
     });
-    console.log("extracted1",extractedText1);
+    console.log("extracted1", extractedText1);
 
-  await page.screenshot({path: './tmp/puppeteer/url_screenshot.jpg', fullPage: true});
-  await page.pdf({path: './tmp/puppeteer/puppet.pdf', format: 'a4'});
+    await page.screenshot({ path: './tmp/puppeteer/url_screenshot.jpg', fullPage: true });
+    await page.pdf({ path: './tmp/puppeteer/puppet.pdf', format: 'a4' });
 
-  const dimensions = await page.evaluate(() => {
-    return {
-      width: document.documentElement.clientWidth,
-      height: document.documentElement.clientHeight,
-      deviceScaleFactor: window.devicePixelRatio,
-    };
-  });
+    const dimensions = await page.evaluate(() => {
+        return {
+            width: document.documentElement.clientWidth,
+            height: document.documentElement.clientHeight,
+            deviceScaleFactor: window.devicePixelRatio,
+        };
+    });
 
-  console.log('Dimensions:', dimensions);
+    console.log('Dimensions:', dimensions);
 
-  await browser.close();
+    await browser.close();
 
     res.json({});
 })

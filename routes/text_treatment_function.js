@@ -6,7 +6,7 @@ module.exports = function (str) {
   //suppression des lignes vides creees par le split
 
   //title
-  resultObj.title = arr[0]
+  resultObj.name = arr[0]
 
   //ingredients : nom et quantite
   var regExIngredients = /^[+-]/
@@ -56,9 +56,9 @@ module.exports = function (str) {
         cookTimeNum = cookTimeNum * 60
         // si le cooktime n'est pas en minutes, le convertit en minutes
       }
-      resultObj.cookingTime = cookTimeNum;
+      resultObj.cookTime = cookTimeNum;
     } else {
-      resultObj.cookingTime = "";
+      resultObj.cookTime = "";
       //renvoie une string vide si le cooking time n'est pas recupere
     }
     if (prepTime.length > 0) {
@@ -67,14 +67,14 @@ module.exports = function (str) {
       if (!prepTime[0].match(regMinutes)) {
         prepTimeNum = prepTimeNum * 60
       }
-      resultObj.preparationTime = prepTimeNum;
+      resultObj.prepTime = prepTimeNum;
     } else {
-      resultObj.preparationTime = "";
+      resultObj.prepTime = "";
     }
 
   } else {
-    resultObj.preparationTime = "";
-    resultObj.cookingTime = "";
+    resultObj.prepTime = "";
+    resultObj.cookTime = "";
   }
 
   //nb personnes
@@ -82,13 +82,13 @@ module.exports = function (str) {
   var regPaxNumber = /[0-9]+/
   let pax = parseInt(arr.filter(x => x.match(regPax))[0].match(regPaxNumber))
   //filtre le nombre de personnes a partir de "pour" et prend le prenier resultat de l'array (le seul)
-  resultObj.numPax = pax;
+  resultObj.servings = pax;
 
   //deroule
   var regExInstructions = /^Ins/
   let directionBeginning = arr.findIndex(x => x.match(regExInstructions)) + 1
   //trouve l'index de "Instructions" dans l'array de la recette et ajoute 1
-  resultObj.direction = arr.slice(directionBeginning).join("")
+  resultObj.directions = arr.slice(directionBeginning).join("")
   // recupere tous les elements de l'array se situant apres "instructions"
 
   return resultObj
