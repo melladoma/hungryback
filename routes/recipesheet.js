@@ -53,8 +53,37 @@ router.post('/delete-recipe', async function (req, res, next) {
 //ROUTE AJOUT A recipesAdded HOMESCREEN
 //DONNEES ENTREES: req.body.idRecipe
 //DONNEES SORTIE : result true false recette ajoutee a AddedList User en BDD
-router.post('/add-recipe-to-myrecipes', function (req, res, next) {
-	res.send('respond with a resource');
+router.post('/add-recipe-to-myrecipes', async function (req, res, next) {
+
+	var recipe = JSON.parse(req.body.recipe)	
+	var user = await userModel.findOne({ token: req.body.token })
+	user.addedRecipes.push(recipe._id);
+	await user.save()
+
+	res.json();
+});
+
+
+router.post('/delete-recipe-to-myrecipes', async function (req, res, next) {
+
+	var recipe = JSON.parse(req.body.recipe)
+	
+	var user = await userModel.findOne({ token: req.body.token })
+
+	var index = user.addedRecipes.findIndex(x => x == recipe._id)
+
+	user.addedRecipes.splice(index, 1);
+
+	await user.save()
+
+	res.json();
+});
+
+router.post('/initial-fetch-recipesheet', async function (req, res, next) {
+
+	var user = await userModel.findOne({ token: req.body.token })
+	
+	res.json({addedRecipes:user.addedRecipes,likedRecipes:user.likedRecipes});
 });
 
 
