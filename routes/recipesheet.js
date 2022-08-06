@@ -29,14 +29,27 @@ router.post('/like-recipe', async function (req, res, next) {
 	likedRecipe.likeCount = Number(likedRecipe.likeCount) + 1
 	likedRecipeSaved = await likedRecipe.save();
 	
-	var user = await userModel.findOne({ token: req.body.token }).populate("likedRecipes");
+	var user = await userModel.findOne({ token: req.body.token })
 	user.likedRecipes.push(likedRecipeSaved._id);
 	userSaved = await user.save();
-	var list = userSaved.likedRecipes.map(x=>x.id)
 	
-	res.json({likedRecipes: list, likeCount: likedRecipeSaved.likeCount});
+	
+	res.json({likedRecipes: userSaved.likedRecipes, likeCount: likedRecipeSaved.likeCount});
 });
 
+router.post('/dislike-recipe', async function (req, res, next) {
+
+	var likedRecipe = await recipeModel.findOne({ _id: req.body.id });
+	likedRecipe.likeCount = Number(likedRecipe.likeCount) - 1
+	likedRecipeSaved = await likedRecipe.save();
+	
+	var user = await userModel.findOne({ token: req.body.token })
+	var index = user.likedRecipes.findIndex(x => x == likedRecipeSaved._id)
+	user.likedRecipes.splice(index, 1);
+	userSaved = await user.save();
+	
+	res.json({likedRecipes: userSaved.likedRecipes, likeCount: likedRecipeSaved.likeCount});
+});
 
 router.post('/delete-recipe', async function (req, res, next) {
 
@@ -58,9 +71,10 @@ router.post('/add-recipe-to-myrecipes', async function (req, res, next) {
 	var recipe = JSON.parse(req.body.recipe)	
 	var user = await userModel.findOne({ token: req.body.token })
 	user.addedRecipes.push(recipe._id);
-	await user.save()
+	var newUser = await user.save()
 
-	res.json();
+
+	res.json({addedRecipes: JSON.stringify(newUser.addedRecipes)});
 });
 
 
@@ -74,9 +88,10 @@ router.post('/delete-recipe-to-myrecipes', async function (req, res, next) {
 
 	user.addedRecipes.splice(index, 1);
 
-	await user.save()
+	var newUser = await user.save()
 
-	res.json();
+
+	res.json({addedRecipes: JSON.stringify(newUser.addedRecipes)});
 });
 
 router.post('/initial-fetch-recipesheet', async function (req, res, next) {
