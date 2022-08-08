@@ -106,8 +106,18 @@ router.post('/initial-fetch-recipesheet', async function (req, res, next) {
 //DONNEES ENTREE : ingedrients recette req.body.ingredients
 // TRaitement BDD : ajout quantites globales dans BDD
 //DONNEES SORTIE : [{ingredient:totalquantite}]
-router.post('/addToShoppingList', function (req, res, next) {
-	res.send('respond with a resource');
+router.post('/addToShoppingList', async function (req, res, next) {
+
+	console.log(req.body.recipe, 'hellooooooooooo');
+	var recipe = JSON.parse(req.body.recipe)	
+	var user = await userModel.findOne({ token: req.body.token })
+	// var ingredientsListe = []
+	recipe.ingredients.forEach(x => user.shoppingList.push({name:x.name, quantity:x.quantity}))
+	// console.log(ingredientsListe,'c mendel ');
+	// user.shoppingList.push(ingredientsListe);
+	var newUser = await user.save()
+
+	res.json({});
 });
 
 //ROUTE AJOUT AU SEMAINIER
