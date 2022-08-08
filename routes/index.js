@@ -42,7 +42,11 @@ router.post("/upload-image", async function (req, res, next) {
 	var filePath = "./tmp/" + uniqid() + ".jpg";
 	var resultCopy = await req.files.image.mv(filePath);
 	if (!resultCopy) {
+
 		var resultCloud = await cloudinary.uploader.upload(filePath);
+
+		// var resultCloud = await cloudinary.uploader.upload(filePath, { angle: 90 });
+		//fonctionne sur l'OCR mais plus sur le load simple...
 		let resultObj = {
 			imageUrl: resultCloud.url,
 		};
