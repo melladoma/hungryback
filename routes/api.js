@@ -8,6 +8,7 @@ const puppeteer = require('puppeteer');
 
 const tesseract = require("node-tesseract-ocr");
 const treatText = require("./text_treatment_function")
+const treatWeb = require("./web_treatment_function")
 var uniqid = require('uniqid');
 
 //-------ROUTE TESSERACT - POST
@@ -82,8 +83,10 @@ router.post("/url-scrapper", async function (req, res, next) {
     console.log('Dimensions:', dimensions);
 
     await browser.close();
+    var resultObj = treatWeb(extractedText1)
 
-    res.json({});
+
+    res.json({ status: true, recipe: resultObj });
 })
 //DONNEES d'ENTREE: uri photo  req.body.photoUri
 //TRAITEMENT: ???
