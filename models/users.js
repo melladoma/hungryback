@@ -7,7 +7,7 @@ var weeklyPlanSchema = mongoose.Schema({
 
 var shoppingListSchema = mongoose.Schema({
 	name: String,
-	quantity: Number
+	quantity: String
 });
 
 var userSchema = mongoose.Schema({
