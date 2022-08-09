@@ -138,6 +138,23 @@ router.post("/validate-form", async function (req, res, next) {
 
 });
 
+router.post("/initial-fetch-calendar", async function (req, res, next) {
+
+	var myAccount = await userModel
+		.findOne({ token: req.body.token })
+		.populate("weeklyPlan")
+		.exec()
+	console.log(myAccount.weeklyPlan)
+
+	let weeklyPlan = await myAccount.weeklyPlan;
+	// var weekRecipes = await weeklyPlan.populate(myAccount.weeklyPlan"meal").exec()
+	// console.log(weekRecipes)
+
+	res.json({
+		weeklyPlan
+	});
+});
+
 router.get("/ajout-auto-recettes-bdd", async function (req, res, next) {
 	const name = [
 		"pain perdu",

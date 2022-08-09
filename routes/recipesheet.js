@@ -122,14 +122,9 @@ router.post('/addToShoppingList', async function (req, res, next) {
 
 //ROUTE AJOUT AU SEMAINIER
 //DONNEES ENTREE : objet calendrier{idrecette,date} , token
-//DONNEES SORTIE : [liste recettes]
+//DONNEES SORTIE : result
 router.post('/addToWeeklyList', async function (req, res, next) {
-	console.log(req.body)
-	/*[Object: null prototype] {
-  calendarObj: '{"date":"2022-08-10T09:50:06.477Z","recipeId":"62f1391c708f691032e1653d"}',
-  token: 'wHqs9nReYSo_bxmaicUEVNq-Gl-41fdY'
-}*/
-
+	//console.log(req.body)
 	var user = await userModel.findOne({ token: req.body.token })
 	let meal = {
 		date: req.body.date,
@@ -142,7 +137,6 @@ router.post('/addToWeeklyList', async function (req, res, next) {
 	} else {
 		res.json({ result: false });
 	}
-
 
 });
 
