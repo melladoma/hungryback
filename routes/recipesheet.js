@@ -123,9 +123,27 @@ router.post('/addToShoppingList', async function (req, res, next) {
 //ROUTE AJOUT AU SEMAINIER
 //DONNEES ENTREE : objet calendrier{idrecette,date} , token
 //DONNEES SORTIE : [liste recettes]
-router.post('/addToWeeklyList', function (req, res, next) {
+router.post('/addToWeeklyList', async function (req, res, next) {
+	console.log(req.body)
+	/*[Object: null prototype] {
+  calendarObj: '{"date":"2022-08-10T09:50:06.477Z","recipeId":"62f1391c708f691032e1653d"}',
+  token: 'wHqs9nReYSo_bxmaicUEVNq-Gl-41fdY'
+}*/
 
-	res.json({ result: true });
+	var user = await userModel.findOne({ token: req.body.token })
+	let meal = {
+		date: req.body.date,
+		meal: req.body.recipe
+	}
+	user.weeklyPlan.push(meal);
+	var userSaved = await user.save()
+	if (userSaved) {
+		res.json({ result: true });
+	} else {
+		res.json({ result: false });
+	}
+
+
 });
 
 module.exports = router;
