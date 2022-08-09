@@ -62,6 +62,18 @@ router.post('/delete-recipe', async function (req, res, next) {
 	res.json({result});
 });
 
+router.post('/save-comment', async function (req, res, next) {
+
+	console.log(req.body.content)
+	var recipe = await recipeModel.findOne({ _id: req.body.id });
+	/* var user = await userModel.findOne({ token: req.body.token }) */
+	recipe.comments.push({author: req.body.username, date: new Date(), content: req.body.content});
+	var newRecipe = await recipe.save()
+
+
+	res.json({ newComments: JSON.stringify(newRecipe.comments)});
+});
+
 
 //ROUTE AJOUT A recipesAdded HOMESCREEN
 //DONNEES ENTREES: req.body.idRecipe
@@ -97,6 +109,7 @@ router.post('/delete-recipe-to-myrecipes', async function (req, res, next) {
 router.post('/initial-fetch-recipesheet', async function (req, res, next) {
 
 	var user = await userModel.findOne({ token: req.body.token })
+	/* var recipe = await recipeModel.findOne({ _id: req.body.id}) */ //pour mettre à jour commentaires dès qu'il y en a un nouveau, ou même les addedRecipes, LikedRecipes et n'importe quel changement dans la page
 	
 	res.json({addedRecipes:user.addedRecipes,likedRecipes:user.likedRecipes});
 });

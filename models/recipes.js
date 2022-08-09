@@ -11,7 +11,7 @@ var authorSchema = mongoose.Schema({
 });
 
 var commentSchema = mongoose.Schema({
-	author: { type: mongoose.Schema.Types.ObjectId, ref: "users" },
+	author: String,
 	date: Date,
 	content: String,
 });
