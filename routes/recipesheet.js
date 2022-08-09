@@ -146,6 +146,24 @@ router.post('/initial-fetch-shoppingList', async function (req, res, next) {
 	res.json({shoppingList:user.shoppingList});
 })
 
+router.post('/delete-selected-shoppingList', async function (req, res, next) {
+
+	var user = await userModel.findOne({ token: req.body.token })
+	user.shoppingList = user.shoppingList.filter(x=>!JSON.parse(req.body.selection).includes(x._id) )
+	newUser = await user.save()
+	res.json({shoppingList:newUser.shoppingList});
+})
+
+router.post('/delete-all-shoppingList', async function (req, res, next) {
+
+	var user = await userModel.findOne({ token: req.body.token })
+	/* .update({}, { $set : {'myArray': [] }} , {multi:true} ) */
+	user.shoppingList = []
+	newUser = await user.save()
+	
+	res.json({shoppingList:[]});
+})
+
 //ROUTE AJOUT AU SEMAINIER
 //DONNEES ENTREE : objet calendrier{idrecette,date} , token
 //DONNEES SORTIE : result
