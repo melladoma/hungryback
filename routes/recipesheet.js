@@ -124,14 +124,27 @@ router.post('/addToShoppingList', async function (req, res, next) {
 	console.log(req.body.recipe, 'hellooooooooooo');
 	var recipe = JSON.parse(req.body.recipe)	
 	var user = await userModel.findOne({ token: req.body.token })
-	// var ingredientsListe = []
-	recipe.ingredients.forEach(x => user.shoppingList.push({name:x.name, quantity:x.quantity}))
-	// console.log(ingredientsListe,'c mendel ');
-	// user.shoppingList.push(ingredientsListe);
+	// var oldShoppingListeNames = user.shoppingList.filter(x=>x.name)
+	// var oldShoppingListequantity = user.shoppingList.filter(x=>x.quantity)
+	// var newShoppingListe = []
+	recipe.ingredients.forEach(x => {
+		// if (oldShoppingListe.includes()) {
+			
+		// }
+		user.shoppingList.push({name:x.name, quantity:x.quantity})})
+
+
 	var newUser = await user.save()
 
-	res.json({});
+	res.json({shoppingList:newUser.shoppingList,});
 });
+
+router.post('/initial-fetch-shoppingList', async function (req, res, next) {
+
+	var user = await userModel.findOne({ token: req.body.token })
+	
+	res.json({shoppingList:user.shoppingList});
+})
 
 //ROUTE AJOUT AU SEMAINIER
 //DONNEES ENTREE : idrecette 
