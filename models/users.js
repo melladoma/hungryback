@@ -1,7 +1,7 @@
 var mongoose = require("mongoose");
 
 var weeklyPlanSchema = mongoose.Schema({
-	date: Date,
+	date: String,
 	meal: { type: mongoose.Schema.Types.ObjectId, ref: "recipes" }
 });
 
