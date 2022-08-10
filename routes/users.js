@@ -4,14 +4,8 @@ var router = express.Router();
 var uid2 = require("uid2");
 var bcrypt = require("bcrypt");
 
-
 var userModel = require("../models/users");
-//-------ROUTE SIGN-UP - POST
-//DONNEES d'ENTREE: req.body.emailFromFront, req.body.usernameFromFront, req.body.passwordFromFront
-//DONNEES DE SORTIE: {user : avatar, username,token, description, premium status}
-// Copier collé correction Mornings News Part 4
-
-//-------------------------------------------------route sign up-----------------------------------------------
+//-------ROUTE SIGN-UP
 router.post("/sign-up", async function (req, res, next) {
 	//ajouter une verification d'unicité du username cf code Dylan
 
@@ -89,10 +83,6 @@ router.post("/sign-up", async function (req, res, next) {
 });
 
 //-------ROUTE SIGN-IN
-//DONNEES d'ENTREE: req.body.emailFromFront, req.body.passwordFromFront
-//DONNEES DE SORTIE: {user : avatar, username,token, description, premium status}
-
-//-------------------------------------------------route sign in-----------------------------------------------
 router.post("/sign-in", async function (req, res, next) {
 	var username = null;
 	var result = false;
@@ -140,6 +130,7 @@ router.post("/sign-in", async function (req, res, next) {
 				username = user.username;
 				avatar = user.avatar;
 				likedRecipes = user.likedRecipes;
+
 				//sinon le mot de pas est incorrect
 			} else {
 				result = false;
@@ -149,7 +140,6 @@ router.post("/sign-in", async function (req, res, next) {
 			error.push("E-mail ou pseudo incorrect.");
 		}
 	}
-
 	res.json({ result, error, token, username, avatar, likedRecipes });
 });
 

@@ -24,6 +24,7 @@
     "puppeteer": "^16.0.0",
     "puppeteer-core": "^16.0.0",
     "sync-request": "^6.1.0",
+    "tesseract.js": "^2.1.5",
     "tesseractocr": "^2.0.3",
     "uid2": "^1.0.0",
     "uniqid": "^5.4.0"

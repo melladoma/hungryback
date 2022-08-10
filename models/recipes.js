@@ -3,6 +3,7 @@ var mongoose = require("mongoose");
 var ingredientSchema = mongoose.Schema({
 	name: String,
 	quantity: String,
+	//isCheckedInShoppingList: Boolean,
 });
 
 var authorSchema = mongoose.Schema({

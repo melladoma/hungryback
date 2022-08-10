@@ -4,7 +4,6 @@ var recipeModel = require("../models/recipes");
 var userModel = require("../models/users");
 var uniqid = require("uniqid");
 var fs = require("fs");
-var request = require("sync-request");
 var cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -17,39 +16,22 @@ router.get("/", function (req, res, next) {
 	res.send("respond with a resource");
 });
 
-//---- ROUTE AFFICHAGE HOMESCREEN - GET => voir en USEEFFECT d'INITIALISATION
-//DONNEES d'ENTREE: token user
-//TRAITEMENT : recherche BDD recipesAdded user
-//DONNEES DE SORTIE:tableau de recettes du user [{title,ingredients,direction,persons,cookingTime,prepTime,tags,author,picture,comments,likeCount,privateStatus}]
-// router.get('/get-myrecipes', function (req, res, next) {
-// 	res.send('respond with a resource');
-// });
-
 //----- ROUTE AFFICHAGE FEED - GET USEEFFECT d'INITIALISATION
-//DONNEES d'ENTREE: /
-//TRAITEMENT : recherche BDD recettes publiques
-//DONNEES DE SORTIE:tableau de recettes publiques [{title,ingredients,direction,persons,cookingTime,prepTime,tags,author,picture,comments,likeCount,privateStatus}]
 router.get("/get-feed", function (req, res, next) {
 	res.send("respond with a resource");
 });
 
 //ROUTE VALIDATION FICHE RECETTE -POST ONPRESS
-
-//DONNEES d'ENTREE: objet validatedForm{title,ingredients,direction,persons,cookingTime,prepTime,tags,author,picture,privateStatus}
-//TRAITEMENT : envoi en BDD
-//DONNEES DE SORTIE: result true/false sur enregistrement BDD recette
 router.post("/upload-image", async function (req, res, next) {
 	var filePath = "./tmp/" + uniqid() + ".jpg";
 	var resultCopy = await req.files.image.mv(filePath);
 	if (!resultCopy) {
-
 		var resultCloud = await cloudinary.uploader.upload(filePath);
 
 		//fonctionne sur l'OCR mais plus sur le load simple...
 		let resultObj = {
 			imageUrl: resultCloud.url,
 		};
-		// console.log(resultObj)
 		fs.unlinkSync(filePath);
 		res.json({ result: true, message: "File uploaded!", resultObj });
 	} else {
@@ -61,13 +43,14 @@ router.post("/upload-image-camera", async function (req, res, next) {
 	var filePath = "./tmp/" + uniqid() + ".jpg";
 	var resultCopy = await req.files.image.mv(filePath);
 	if (!resultCopy) {
-
-		var resultCloud = await cloudinary.uploader.upload(filePath, { angle: 90 });
+		var resultCloud = await cloudinary.uploader.upload(filePath, {
+			angle: 90,
+		});
 		//fonctionne sur l'OCR mais plus sur le load simple...
 		let resultObj = {
 			imageUrl: resultCloud.url,
 		};
-		// console.log(resultObj)
+
 		fs.unlinkSync(filePath);
 		res.json({ result: true, message: "File uploaded!", resultObj });
 	} else {
@@ -76,7 +59,6 @@ router.post("/upload-image-camera", async function (req, res, next) {
 });
 
 router.post("/validate-form", async function (req, res, next) {
-	// console.log(req.body.recipe)
 	//filtre les ingredients vides
 	let ingredients = req.body.recipe.ingredients.filter((x) => x.name !== "");
 
@@ -106,13 +88,12 @@ router.post("/validate-form", async function (req, res, next) {
 		let result = false;
 		if (recipeSaved && authorSaved) {
 			result = true;
-			// console.log(recipeSaved)
+
 			res.json({ result, recipeSaved });
 		} else {
 			res.json({ result });
 		}
 	} else {
-
 		const filter = { _id: req.body.recipe._id };
 		const update = {
 			name: req.body.recipe.name,
@@ -126,8 +107,10 @@ router.post("/validate-form", async function (req, res, next) {
 			privateStatus: req.body.recipe.privateStatus,
 		};
 
-		let recipeUpdated = await recipeModel.findOneAndUpdate(filter, update, { new: true });
-		let result = false
+		let recipeUpdated = await recipeModel.findOneAndUpdate(filter, update, {
+			new: true,
+		});
+		let result = false;
 		if (recipeUpdated) {
 			result = true;
 			res.json({ result, recipeSaved: recipeUpdated });
@@ -135,35 +118,24 @@ router.post("/validate-form", async function (req, res, next) {
 			res.json({ result });
 		}
 	}
-
 });
 
 router.post("/initial-fetch-calendar", async function (req, res, next) {
-
-	// var myAccount = await userModel
-	// 	.findOne({ token: req.body.token })
-	// 	.populate("weeklyPlan")
-	// 	.exec()
-	// console.log(myAccount.weeklyPlan)
-
 	var myAccount = await userModel
 		.findOne({ token: req.body.token })
 		.populate({
-			path: 'weeklyPlan',
+			path: "weeklyPlan",
 			populate: {
-				path: 'meal',
-				model: 'recipes'
-			}
+				path: "meal",
+				model: "recipes",
+			},
 		})
-		.exec()
+		.exec();
 
 	let weeklyPlan = await myAccount.weeklyPlan;
-	
-	// var weekRecipes = await weeklyPlan.populate(myAccount.weeklyPlan"meal").exec()
-	// console.log(weekRecipes)
 
 	res.json({
-		weeklyPlan
+		weeklyPlan,
 	});
 });
 
@@ -246,5 +218,3 @@ router.get("/ajout-auto-recettes-bdd", async function (req, res, next) {
 });
 
 module.exports = router;
-
-//ROUTE SHOPP
