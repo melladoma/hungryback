@@ -51,15 +51,25 @@ router.post("/url-scrapper", async function (req, res, next) {
     const page = await browser.newPage();
     /*  await page.emulate(iPhone); */
 
-
     await page.goto(req.body.url);
+    const html = await page.content()
+
+    var htmlArr = html.split('\n')
+    htmlArr = htmlArr.filter(x => x !== "")
+    var htmlArrShort = htmlArr.slice(0, 30)
+
+    var isImg = (element) => element.includes('meta property="og:image" content="https://www.ptitchef.com/imgupl/')
+    var indexImg = htmlArrShort.findIndex(isImg)
+    var img = htmlArrShort[indexImg]
+    let regExImg = /https:.+jpg/i
+    let imgUrl = img.match(regExImg)[0]
 
     //prend code source, mais certaines pages n'affichent rien comme React
-    const extractedText = await page.$eval('*', (el) => el.innerText);
-    console.log("extracted:", extractedText);
+    // const extractedText = await page.$eval('*', (el) => el.innerText);
+    // console.log("extracted:", extractedText);
 
     //fais un copier coller à la main
-    const extractedText1 = await page.$eval('*', (el) => {
+    var extractedText1 = await page.$eval('*', (el) => {
         const selection = window.getSelection();
         const range = document.createRange();
         range.selectNode(el);
@@ -67,10 +77,10 @@ router.post("/url-scrapper", async function (req, res, next) {
         selection.addRange(range);
         return window.getSelection().toString();
     });
-    console.log("extracted1", extractedText1);
+    // console.log("extracted1", extractedText1);
 
-    await page.screenshot({ path: './tmp/puppeteer/url_screenshot.jpg', fullPage: true });
-    await page.pdf({ path: './tmp/puppeteer/puppet.pdf', format: 'a4' });
+    // await page.screenshot({ path: './tmp/puppeteer/url_screenshot.jpg', fullPage: true });
+    // await page.pdf({ path: './tmp/puppeteer/puppet.pdf', format: 'a4' });
 
     const dimensions = await page.evaluate(() => {
         return {
@@ -83,6 +93,7 @@ router.post("/url-scrapper", async function (req, res, next) {
     console.log('Dimensions:', dimensions);
 
     await browser.close();
+    extractedText1 = extractedText1 + imgUrl
     var resultObj = treatWeb(extractedText1)
 
 

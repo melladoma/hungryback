@@ -32,7 +32,7 @@ module.exports = function (str) {
 
 
     let ingredients = workArr.filter(value => /^[0-9]+ (?!min|parts|Kcal|réponse+|h)/.test(value))
-    console.log(ingredients)
+    // console.log(ingredients)
     var regExQuantities = /[0-9]+ bocal|[0-9]+ ca*s|[0-9]+ quart|[0-9]+ ca*c|[0-9]+ gousses|[0-9]+ gr*|[0-9]+ kg|[0-9]+ cl|^[0-9]+/i
     //si les ingredients contiennent l'une des indications de quantites ciblees (1 nombre puis 1 texte cible), la filtre, sinon filtre juste le nombre
     var ingredientsSorted = []
@@ -65,7 +65,12 @@ module.exports = function (str) {
     }
     resultObj.directions = directions.join("")
 
-    // console.log(resultObj)
+    //image
+    let regExImg = /https:.+jpg/i
+    let imgUrl = arr.findIndex(element => regExImg.test(element))
+    resultObj.image = arr[imgUrl]
+
+
     return resultObj
 }
 
