@@ -2,9 +2,10 @@ var express = require("express");
 var router = express.Router();
 const { default: mongoose } = require("mongoose");
 const puppeteer = require("puppeteer");
-const tesseract = require("node-tesseract-ocr");
 const treatText = require("./text_treatment_function");
 const treatWeb = require("./web_treatment_function");
+const Tesseract = require("tesseract.js");
+/* const tesseract = require("node-tesseract-ocr"); */
 
 //-------ROUTE TESSERACT - POST
 router.post("/tesseract", async function (req, res, next) {
@@ -15,9 +16,19 @@ router.post("/tesseract", async function (req, res, next) {
 		oem: 3,
 		psm: 3,
 	};
-	tesseract
+	/* 	tesseract
 		.recognize(image, config)
 		.then((text) => {
+			var resultObj = treatText(text);
+
+			res.json({ recipeTreated: resultObj });
+		})
+		.catch((error) => {
+			res.json({ message: "err" });
+		}); */
+
+	Tesseract.recognize(image, "fra", { logger: (m) => console.log(m) })
+		.then(({ data: { text } }) => {
 			var resultObj = treatText(text);
 
 			res.json({ recipeTreated: resultObj });
