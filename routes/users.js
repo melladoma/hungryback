@@ -140,6 +140,9 @@ router.post("/sign-in", async function (req, res, next) {
 				username = user.username;
 				avatar = user.avatar;
 				likedRecipes = user.likedRecipes;
+
+				console.log('tu est connecter gros batard');
+
 				//sinon le mot de pas est incorrect
 			} else {
 				result = false;
@@ -149,8 +152,9 @@ router.post("/sign-in", async function (req, res, next) {
 			error.push("E-mail ou pseudo incorrect.");
 		}
 	}
-
+console.log('heloo38');
 	res.json({ result, error, token, username, avatar, likedRecipes });
 });
+
 
 module.exports = router;
